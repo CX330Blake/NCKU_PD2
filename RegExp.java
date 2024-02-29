@@ -1,5 +1,3 @@
-package HW1;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,12 +16,30 @@ public class RegExp {
         }
         // Second Problem
         if (line.contains(str1)) {
-            System.out.println("Y,");
+            System.out.print("Y,");
         } else {
-            System.out.println("N,");
+            System.out.print("N,");
         }
         // Third Problem
-
+        int count = 0;
+        int from_index = 0;
+        while ((from_index = line.indexOf(str2, from_index)) != -1) {
+            count++;
+            from_index += str2.length();
+        }
+        if (count >= s2Count) {
+            System.out.print("Y,");
+        } else {
+            System.out.print("N,");
+        }
+        // Fourth Problem
+        int a_index = line.indexOf("a");
+        String substring = line.substring(a_index);
+        if (substring.contains("bb")) {
+            System.out.println("Y");
+        } else {
+            System.out.println("N");
+        }
     }
 
     public static void main(String[] args) {
