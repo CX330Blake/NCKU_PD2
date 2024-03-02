@@ -34,12 +34,17 @@ public class RegExp {
         }
         // Fourth Problem
         int a_index = line.indexOf("a");
-        String substring = line.substring(a_index);
-        if (substring.contains("bb")) {
-            System.out.println("Y");
+        if (a_index != -1) {
+            String substring = line.substring(a_index);
+            if (substring.contains("bb")) {
+                System.out.println("Y");
+            } else {
+                System.out.println("N");
+            }
         } else {
             System.out.println("N");
         }
+
     }
 
     public static void main(String[] args) {
