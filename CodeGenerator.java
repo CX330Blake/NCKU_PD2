@@ -79,7 +79,7 @@ class Parser {
         List<String> classList = new ArrayList<>();
         String[] lines = mermaidText.split("\n");
         for (String line : lines) {
-            if (line.startsWith("    class")) {
+            if (line.contains("class ")) {
                 String className = extractClassName(line);
                 if (!classList.contains(className)) {
                     classList.add(className);
