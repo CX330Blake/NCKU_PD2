@@ -15,6 +15,6 @@ classDiagram
     Person : -String name
 
     class Student {
-        int studClass;
-        Teacher coorespondingTeacher;
+        -int number
+        -Teacher coorespondingTeacher
     }

@@ -22,7 +22,13 @@ public class CodeGenerator {
 
             FileReader mermaidCodeReader = new FileReader();
             mermaidCode = mermaidCodeReader.read(fileName);
-            String temp = Parser.splitByClass(mermaidCode);
+            List<String> classNameList = Parser.splitByClass(mermaidCode);
+            for (String className : classNameList) {
+                List<String> classContentList = Parser.getClassContent(mermaidCode, className);
+                for (String classContent : classContentList) {
+                    System.out.println(classContent);
+                }
+            }
         }
     }
 }
@@ -39,9 +45,66 @@ class FileReader {
 }
 
 class Parser {
-    public static String splitByClass(String input) {
+    public static List<String> splitByClass(String mermaidText) {
         List<String> classList = new ArrayList<>();
-        String[] lines = input.split("\n");
+        String[] lines = mermaidText.split("\n");
+        for (String line : lines) {
+            if (line.startsWith("    class")) {
+                String className = extractClassName(line);
+                if (!classList.contains(className)) {
+                    classList.add(className);
+                }
+            }
+        }
+        return classList;
+    }
 
+    public static String extractClassName(String classLine) {
+        Pattern pattern = Pattern.compile("\\bclass\\s+(\\w+)\\b");
+        Matcher matcher = pattern.matcher(classLine);
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
+    }
+
+    public static List<String> getClassContent(String mermaidText, String className) {
+        String[] lines = mermaidText.split("\n");
+        List<String> classContent = new ArrayList<>();
+        for (String line : lines) {
+            String classNameWithColon = String.format(" %s ", className);
+            String classNameWithBraces = String.format("%s {", className);
+            if (line.contains(classNameWithColon)) {
+                Pattern pattern = Pattern.compile("\\s*(\\+|\\-).*");
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.find()) {
+                    classContent.add(matcher.group(0));
+                }
+            }
+            if (line.contains(classNameWithBraces)) {
+                int currentIndex = findIndex(lines, line);
+                Boolean foundClosingBraces = false;
+                while (!foundClosingBraces) {
+                    String nextLine = lines[currentIndex + 1];
+                    if (nextLine.contains("}")) {
+                        foundClosingBraces = true;
+                    } else {
+                        classContent.add(nextLine);
+                        currentIndex++;
+                    }
+                }
+            }
+        }
+        return classContent;
+    }
+
+    public static int findIndex(String arr[], String target) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i].equals(target)) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
