@@ -25,16 +25,39 @@ public class CodeGenerator {
             List<String> classNameList = Parser.splitByClass(mermaidCode);
             for (String className : classNameList) {
                 List<String> classContentList = Parser.getClassContent(mermaidCode, className);
+                String wirteInFileName = className + ".java";
                 String writeInContent = "public class " + className + " {\n";
                 for (String classContent : classContentList) {
-                    if (classContent.contains("()")) {
+                    if (classContent.contains("(")) { // It is a function
                         if (classContent.startsWith("+")) {
                             classContent = classContent.substring(1);
-
+                            String functionName = classContent.split("\\) ")[0] + ")";
+                            String returnType = classContent.split("\\) ")[1];
+                            writeInContent += "    public " + returnType + " " + functionName + " {;}\n";
                         } else if (classContent.startsWith("-")) {
+                            classContent = classContent.substring(1);
+                            String functionName = classContent.split("\\) ")[0] + ")";
+                            String returnType = classContent.split("\\) ")[1];
+                            writeInContent += "    private " + returnType + " " + functionName + " {;}\n";
                         }
+                    } else { // It is a variable
+                        if (classContent.contains("+")) {
+                            classContent = classContent.substring(1);
+                            String variableName = classContent.split(" ")[1];
+                            String returnType = classContent.split(" ")[0];
+                            writeInContent += "    public " + returnType + " " + variableName + ";\n";
+                        } else if (classContent.contains("-")) {
+                            classContent = classContent.substring(1);
+                            String variableName = classContent.split(" ")[1];
+                            String returnType = classContent.split(" ")[0];
+                            writeInContent += "    private " + returnType + " " + variableName + ";\n";
+                        }
+
                     }
                 }
+                writeInContent += "}";
+                // System.out.println(writeInContent);
+                Writer.writeToFile(wirteInFileName, writeInContent);
             }
         }
     }
@@ -121,5 +144,15 @@ class Parser {
             }
         }
         return -1;
+    }
+}
+
+class Writer {
+    public static void writeToFile(String fileName, String content) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(content);
+        } catch (IOException e) {
+            System.err.println("寫入文件時出現錯誤：" + e.getMessage());
+        }
     }
 }
