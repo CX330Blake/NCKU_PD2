@@ -25,8 +25,15 @@ public class CodeGenerator {
             List<String> classNameList = Parser.splitByClass(mermaidCode);
             for (String className : classNameList) {
                 List<String> classContentList = Parser.getClassContent(mermaidCode, className);
+                String writeInContent = "public class " + className + " {\n";
                 for (String classContent : classContentList) {
-                    System.out.println(classContent);
+                    if (classContent.contains("()")) {
+                        if (classContent.startsWith("+")) {
+                            classContent = classContent.substring(1);
+
+                        } else if (classContent.startsWith("-")) {
+                        }
+                    }
                 }
             }
         }
@@ -72,29 +79,37 @@ class Parser {
     public static List<String> getClassContent(String mermaidText, String className) {
         String[] lines = mermaidText.split("\n");
         List<String> classContent = new ArrayList<>();
-        for (String line : lines) {
+        for (int i = 0; i < lines.length; i++) {
             String classNameWithColon = String.format(" %s ", className);
             String classNameWithBraces = String.format("%s {", className);
-            if (line.contains(classNameWithColon)) {
+            if (lines[i].contains(classNameWithColon)) {
                 Pattern pattern = Pattern.compile("\\s*(\\+|\\-).*");
-                Matcher matcher = pattern.matcher(line);
+                Matcher matcher = pattern.matcher(lines[i]);
                 if (matcher.find()) {
-                    classContent.add(matcher.group(0));
+                    classContent.add(matcher.group(0).trim());
                 }
             }
-            if (line.contains(classNameWithBraces)) {
-                int currentIndex = findIndex(lines, line);
+            if (lines[i].contains(classNameWithBraces)) {
+                // System.out.println(line);
+                // System.out.println(findIndex(lines, line));
+                // int currentIndex = findIndex(lines, lines[i]);
                 Boolean foundClosingBraces = false;
                 while (!foundClosingBraces) {
-                    String nextLine = lines[currentIndex + 1];
+                    String nextLine = lines[i + 1].trim();
                     if (nextLine.contains("}")) {
                         foundClosingBraces = true;
                     } else {
-                        classContent.add(nextLine);
-                        currentIndex++;
+                        if (!classContent.contains(nextLine)) {
+                            classContent.add(nextLine);
+                            i++;
+                        } else {
+                            i++;
+                        }
+
                     }
                 }
             }
+
         }
         return classContent;
     }
