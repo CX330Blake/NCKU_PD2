@@ -28,19 +28,76 @@ public class CodeGenerator {
                 String wirteInFileName = className + ".java";
                 String writeInContent = "public class " + className + " {\n";
                 for (String classContent : classContentList) {
-                    if (classContent.contains("(")) { // It is a function
+                    // It is a function
+                    if (classContent.contains("(")) {
                         if (classContent.startsWith("+")) {
                             classContent = classContent.substring(1);
-                            String functionName = classContent.split("\\) ")[0] + ")";
-                            String returnType = classContent.split("\\) ")[1];
-                            writeInContent += "    public " + returnType + " " + functionName + " {;}\n";
+                            if (classContent.startsWith("get")) { // getter method
+                                String functionName = classContent.split("\\) ")[0] + ")";
+                                String returnType = classContent.split("\\) ")[1];
+                                String returnVariable = classContent.split("et")[1].split("\\(\\)")[0].toLowerCase();
+                                writeInContent += "    public " + returnType + " " + functionName + " {\n"
+                                        + "        return " + returnVariable + ";\n    }\n";
+                            } else if (classContent.startsWith("set")) { // setter method
+                                String functionName = classContent.split("\\) ")[0] + ")";
+                                String returnType = classContent.split("\\) ")[1];
+                                String setVariable = classContent.split("et")[1].split("\\(")[0].toLowerCase();
+                                writeInContent += "    public " + returnType + " " + functionName + " {\n"
+                                        + "        this." + setVariable + " = " + setVariable + ";\n    }\n";
+
+                            } else { // normal function
+                                String functionName = classContent.split("\\) ")[0] + ")";
+                                String returnType = classContent.split("\\) ")[1];
+                                writeInContent += "    public " + returnType + " " + functionName + " {";
+                                switch (returnType) {
+                                    case "int":
+                                        writeInContent += "return 0;}\n";
+                                        break;
+                                    case "String":
+                                        writeInContent += "return \"\";}\n";
+                                        break;
+                                    case "boolean":
+                                        writeInContent += "return false;}\n";
+                                    default:
+                                        writeInContent += ";}\n";
+                                }
+                            }
+
                         } else if (classContent.startsWith("-")) {
                             classContent = classContent.substring(1);
-                            String functionName = classContent.split("\\) ")[0] + ")";
-                            String returnType = classContent.split("\\) ")[1];
-                            writeInContent += "    private " + returnType + " " + functionName + " {;}\n";
+                            if (classContent.startsWith("get")) { // getter method
+                                String functionName = classContent.split("\\) ")[0] + ")";
+                                String returnType = classContent.split("\\) ")[1];
+                                String returnVariable = classContent.split("et")[1].split("\\(\\)")[0].toLowerCase();
+                                writeInContent += "    private " + returnType + " " + functionName + " {\n"
+                                        + "        return " + returnVariable + ";\n    }\n";
+                            } else if (classContent.startsWith("set")) { // setter method
+                                String functionName = classContent.split("\\) ")[0] + ")";
+                                String returnType = classContent.split("\\) ")[1];
+                                String setVariable = classContent.split("et")[1].split("\\(")[0].toLowerCase();
+                                writeInContent += "    private " + returnType + " " + functionName + " {\n"
+                                        + "        this." + setVariable + " = " + setVariable + ";\n    }\n";
+
+                            } else { // normal function
+                                String functionName = classContent.split("\\) ")[0] + ")";
+                                String returnType = classContent.split("\\) ")[1];
+                                writeInContent += "    private " + returnType + " " + functionName + " {";
+                                switch (returnType) {
+                                    case "int":
+                                        writeInContent += "return 0;}\n";
+                                        break;
+                                    case "String":
+                                        writeInContent += "return \"\";}\n";
+                                        break;
+                                    case "boolean":
+                                        writeInContent += "return false;}\n";
+                                    default:
+                                        writeInContent += ";}\n";
+                                }
+                            }
                         }
-                    } else { // It is a variable
+                    } else {
+                        // It is a variable
                         if (classContent.contains("+")) {
                             classContent = classContent.substring(1);
                             String variableName = classContent.split(" ")[1];

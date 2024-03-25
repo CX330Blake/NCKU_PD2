@@ -1,20 +1,25 @@
 classDiagram
-    class Person 
-    Person : +introduceSelf(String name) void
+    class Calculator
+    Calculator : +add(int a, int b) int
+    Calculator : +subtract(int a, int b) int
+    Calculator : +multiply(int a, int b) int
 
-    class Student {
-        +String studentID
-        +study() void
-    }
-    
-    class Teacher {
-        +String teacherID
-        +teach() void
-    }
-    Person : -int age
-    Person : -String name
+    Calculator : -int result
+            Calculator : +getResult() int
 
-    class Student {
-        -int number
-        -Teacher coorespondingTeacher
-    }
+    Calculator : +addThreeNumbers(int a, int b, int c) int
+
+    Calculator : +divide(int a, int b) int
+    Calculator :   +isZero(int a) boolean
+      Calculator :   +isNegative(int a) boolean
+
+
+class User
+    User   :    -String name
+User : +isUsingCalculator()    boolean
+    User : +getName() String
+    User : +setName(String name) void
+
+    User : +changeName(String name) void
+
+    User    : +sayHello() void
