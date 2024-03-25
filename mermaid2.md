@@ -1,2 +1,3 @@
 classDiagram
-class MyClass
+class Student
+Student : -String name

@@ -34,32 +34,32 @@ public class CodeGenerator {
                             classContent = classContent.substring(1);
                             if (classContent.startsWith("get")) { // getter method
                                 String functionName = classContent.split("\\) ")[0] + ")";
-                                String returnType = classContent.split("\\) ")[1];
-                                String returnVariable = classContent.split("et")[1].split("\\(\\)")[0].toLowerCase();
+                                String returnType = classContent.split("\\) ")[1].trim();
+                                String returnVariable = classContent.split("et")[1].split("\\(\\)")[0];
+                                returnVariable = returnVariable.substring(0, 1).toLowerCase()
+                                        + returnVariable.substring((1));
                                 writeInContent += "    public " + returnType + " " + functionName + " {\n"
                                         + "        return " + returnVariable + ";\n    }\n";
                             } else if (classContent.startsWith("set")) { // setter method
                                 String functionName = classContent.split("\\) ")[0] + ")";
-                                String returnType = classContent.split("\\) ")[1];
-                                String setVariable = classContent.split("et")[1].split("\\(")[0].toLowerCase();
+                                String returnType = classContent.split("\\) ")[1].trim();
+                                String setVariable = classContent.split("et")[1].split("\\(")[0];
+                                setVariable = setVariable.substring(0, 1).toLowerCase() + setVariable.substring(1);
                                 writeInContent += "    public " + returnType + " " + functionName + " {\n"
                                         + "        this." + setVariable + " = " + setVariable + ";\n    }\n";
 
                             } else { // normal function
                                 String functionName = classContent.split("\\) ")[0] + ")";
-                                String returnType = classContent.split("\\) ")[1];
+                                String returnType = classContent.split("\\) ")[1].trim();
                                 writeInContent += "    public " + returnType + " " + functionName + " {";
-                                switch (returnType) {
-                                    case "int":
-                                        writeInContent += "return 0;}\n";
-                                        break;
-                                    case "String":
-                                        writeInContent += "return \"\";}\n";
-                                        break;
-                                    case "boolean":
-                                        writeInContent += "return false;}\n";
-                                    default:
-                                        writeInContent += ";}\n";
+                                if (returnType.equals("int")) {
+                                    writeInContent += "return 0;}\n";
+                                } else if (returnType.equals("String")) {
+                                    writeInContent += "return \"\";}\n";
+                                } else if (returnType.equals("boolean")) {
+                                    writeInContent += "return false;}\n";
+                                } else if (returnType.equals("void")) {
+                                    writeInContent += ";}\n";
                                 }
                             }
 
@@ -67,34 +67,35 @@ public class CodeGenerator {
                             classContent = classContent.substring(1);
                             if (classContent.startsWith("get")) { // getter method
                                 String functionName = classContent.split("\\) ")[0] + ")";
-                                String returnType = classContent.split("\\) ")[1];
-                                String returnVariable = classContent.split("et")[1].split("\\(\\)")[0].toLowerCase();
+                                String returnType = classContent.split("\\) ")[1].trim();
+                                String returnVariable = classContent.split("et")[1].split("\\(\\)")[0];
+                                returnVariable = returnVariable.substring(0, 1).toLowerCase()
+                                        + returnVariable.substring((1));
                                 writeInContent += "    private " + returnType + " " + functionName + " {\n"
                                         + "        return " + returnVariable + ";\n    }\n";
                             } else if (classContent.startsWith("set")) { // setter method
                                 String functionName = classContent.split("\\) ")[0] + ")";
-                                String returnType = classContent.split("\\) ")[1];
-                                String setVariable = classContent.split("et")[1].split("\\(")[0].toLowerCase();
+                                String returnType = classContent.split("\\) ")[1].trim();
+                                String setVariable = classContent.split("et")[1].split("\\(")[0];
+                                setVariable = setVariable.substring(0, 1).toLowerCase() + setVariable.substring(1);
                                 writeInContent += "    private " + returnType + " " + functionName + " {\n"
                                         + "        this." + setVariable + " = " + setVariable + ";\n    }\n";
 
                             } else { // normal function
                                 String functionName = classContent.split("\\) ")[0] + ")";
-                                String returnType = classContent.split("\\) ")[1];
+                                String returnType = classContent.split("\\) ")[1].trim();
                                 writeInContent += "    private " + returnType + " " + functionName + " {";
-                                switch (returnType) {
-                                    case "int":
-                                        writeInContent += "return 0;}\n";
-                                        break;
-                                    case "String":
-                                        writeInContent += "return \"\";}\n";
-                                        break;
-                                    case "boolean":
-                                        writeInContent += "return false;}\n";
-                                    default:
-                                        writeInContent += ";}\n";
+                                if (returnType.equals("int")) {
+                                    writeInContent += "return 0;}\n";
+                                } else if (returnType.equals("String")) {
+                                    writeInContent += "return \"\";}\n";
+                                } else if (returnType.equals("boolean")) {
+                                    writeInContent += "return false;}\n";
+                                } else if (returnType.equals("void")) {
+                                    writeInContent += ";}\n";
                                 }
                             }
+
                         }
                     } else {
                         // It is a variable
@@ -160,16 +161,20 @@ class Parser {
         String[] lines = mermaidText.split("\n");
         List<String> classContent = new ArrayList<>();
         for (int i = 0; i < lines.length; i++) {
-            String classNameWithColon = String.format(" %s ", className);
-            String classNameWithBraces = String.format("%s {", className);
-            if (lines[i].contains(classNameWithColon)) {
-                Pattern pattern = Pattern.compile("\\s*(\\+|\\-).*");
-                Matcher matcher = pattern.matcher(lines[i]);
-                if (matcher.find()) {
-                    classContent.add(matcher.group(0).trim());
-                }
+            // String classNameWithColon = String.format("%s :", className);
+            // String classNameWithBraces = String.format("%s {", className);
+            boolean classNameWithColon = lines[i].contains(className)
+                    && lines[i].trim().substring(className.length()).contains(":");
+            boolean classNameWithBrace = lines[i].contains(className) && lines[i].contains("{");
+            if (classNameWithColon) {
+                // Pattern pattern = Pattern.compile("\\s*(\\+|\\-).*");
+                // Matcher matcher = pattern.matcher(lines[i]);
+                // if (matcher.find()) {
+                // classContent.add(matcher.group(0).trim());
+                // }
+                classContent.add(lines[i].split(":")[1].trim());
             }
-            if (lines[i].contains(classNameWithBraces)) {
+            if (classNameWithBrace) {
                 // System.out.println(line);
                 // System.out.println(findIndex(lines, line));
                 // int currentIndex = findIndex(lines, lines[i]);

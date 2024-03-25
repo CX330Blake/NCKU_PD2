@@ -1,6 +1,9 @@
 public class Student {
-    public String studentID;
+    public int studentID;
     public void study() {;}
-    private int number;
-    private Teacher coorespondingTeacher;
+    private String studentName;
+    private Teacher supervisor;
+    public String getStudentName() {
+        return studentName;
+    }
 }
